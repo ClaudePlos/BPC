@@ -12,12 +12,15 @@ eap_globals.USTAW_konsolidacje('N');
 end;
 
 
+-- Account:
+
 select knt_pelny_numer id, knt_nazwa as "Polish Description", null as "English Description" 
 , case when substr(knt_pelny_numer,1,1) in (5,7) or  substr(knt_pelny_numer,1,3) in ('870') then 'EXP' else 'AST' end as "Account type"
 , null as "Rate type"
-, null as "Hierarchy"
+, substr(knt_pelny_numer, 0, length(knt_pelny_numer)-length(knt_numer_segmentu)-1)   as "Hierarchy"
 , null as "Intercompany"
- from kg_konta where knt_typ = 'B' and knt_rp_rok = 2022
+ from kg_konta k1 where knt_typ = 'B' and knt_rp_rok = 2022
 order by 1
+
 
 </pre>
