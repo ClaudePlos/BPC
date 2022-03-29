@@ -13,7 +13,9 @@ begin
 eap_globals.USTAW_konsolidacje('T');
 end;
 
+delete BPC_STATUTORY_2021
 
+commit
 
 insert into BPC_STATUTORY_2021 (time, gl_account, company, partner, amount) 
 select time, gl_account, company, partner, sum(ks_kwota) ammount from ( 
