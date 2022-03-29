@@ -27,7 +27,7 @@ select to_char(ks_dok_data_zaksiegowania,'YYYY-MM')  time
 , 'Ct'type
 from kgt_ksiegowania, kg_konta, eat_firmy
 where ks_knt_ma = knt_id and ks_frm_id = frm_id 
-and ks_f_symulacja = 'T' and ks_f_tymczasowy = 'T'
+and ks_f_symulacja = 'T' 
 and knt_typ = 'B'
 and to_char(ks_dok_data_zaksiegowania,'YYYY') = 2021 
 and frm_id in (300000,300170,300201,300203,300202,300305,300313,300317,300319,300304,300322,300315,300303,300314)
@@ -40,11 +40,10 @@ select to_char(ks_dok_data_zaksiegowania,'YYYY-MM')  time
 , 'Dt'type
 from kgt_ksiegowania, kg_konta, eat_firmy
 where ks_knt_wn = knt_id and ks_frm_id = frm_id 
-and ks_f_symulacja = 'T' and ks_f_tymczasowy = 'T'
+and ks_f_symulacja = 'T' 
 and knt_typ = 'B'
 and to_char(ks_dok_data_zaksiegowania,'YYYY') = 2021 
 and frm_id in (300000,300170,300201,300203,300202,300305,300313,300317,300319,300304,300322,300315,300303,300314)
-
 ) group by time, gl_account, company, partner
 
 commit
