@@ -21,8 +21,8 @@ insert into BPC_STATUTORY_2021 (time, gl_account, company, partner, amount)
 select time, gl_account, company, partner, sum(ks_kwota) ammount from ( 
 select to_char(ks_dok_data_zaksiegowania,'YYYY-MM')  time 
 , knt_pelny_numer GL_ACCOUNT
-, frm_nazwa COMPANY
-, (select kl_skrot from ckk_klienci, kgt_dokumenty where dok_kl_kod_pod = kl_kod and dok_id = ks_dok_id) Partner
+, frm_kl_id COMPANY
+, (select kl_kod from ckk_klienci, kgt_dokumenty where dok_kl_kod_pod = kl_kod and dok_id = ks_dok_id) Partner
 , ks_kwota
 , 'Ct'type
 from kgt_ksiegowania, kg_konta, eat_firmy
@@ -34,8 +34,8 @@ and frm_id in (300000,300170,300201,300203,300202,300305,300313,300317,300319,30
 union all 
 select to_char(ks_dok_data_zaksiegowania,'YYYY-MM')  time 
 , knt_pelny_numer GL_ACCOUNT
-, frm_nazwa COMPANY
-, (select kl_skrot from ckk_klienci, kgt_dokumenty where dok_kl_kod_pod = kl_kod and dok_id = ks_dok_id) Partner
+, frm_kl_id COMPANY
+, (select kl_kod from ckk_klienci, kgt_dokumenty where dok_kl_kod_pod = kl_kod and dok_id = ks_dok_id) Partner
 , ks_kwota
 , 'Dt'type
 from kgt_ksiegowania, kg_konta, eat_firmy
