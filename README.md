@@ -17,13 +17,14 @@ delete BPC_STATUTORY_2021
 
 commit
 
-insert into BPC_STATUTORY_2021 (time, gl_account, company, partner, amount) 
-select time, gl_account, company, partner, sum(ks_kwota) ammount from ( 
+insert into BPC_STATUTORY_2021 (time, gl_account, company, partner, ct, dt)
+select time, gl_account, company, partner, sum(CT) CT, sum(DT) DT  from ( 
 select to_char(ks_dok_data_zaksiegowania,'YYYY-MM')  time 
 , knt_pelny_numer GL_ACCOUNT
-, frm_kl_id COMPANY
-, (select kl_kod from ckk_klienci, kgt_dokumenty where dok_kl_kod_pod = kl_kod and dok_id = ks_dok_id) Partner
-, ks_kwota
+, frm_id COMPANY
+, (select frm_id from eat_firmy, kgt_dokumenty where dok_kl_kod_pod = frm_kl_id and dok_id = ks_dok_id) Partner
+, ks_kwota CT
+, null DT
 , 'Ct'type
 from kgt_ksiegowania, kg_konta, eat_firmy
 where ks_knt_ma = knt_id and ks_frm_id = frm_id 
@@ -34,8 +35,9 @@ and frm_id in (300000,300170,300201,300203,300202,300305,300313,300317,300319,30
 union all 
 select to_char(ks_dok_data_zaksiegowania,'YYYY-MM')  time 
 , knt_pelny_numer GL_ACCOUNT
-, frm_kl_id COMPANY
-, (select kl_kod from ckk_klienci, kgt_dokumenty where dok_kl_kod_pod = kl_kod and dok_id = ks_dok_id) Partner
+, frm_id COMPANY
+, (select frm_id from eat_firmy, kgt_dokumenty where dok_kl_kod_pod = frm_kl_id and dok_id = ks_dok_id) Partner
+, null
 , ks_kwota
 , 'Dt'type
 from kgt_ksiegowania, kg_konta, eat_firmy
@@ -45,6 +47,7 @@ and knt_typ = 'B'
 and to_char(ks_dok_data_zaksiegowania,'YYYY') = 2021 
 and frm_id in (300000,300170,300201,300203,300202,300305,300313,300317,300319,300304,300322,300315,300303,300314)
 ) group by time, gl_account, company, partner
+
 
 commit
 
