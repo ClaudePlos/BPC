@@ -6,7 +6,35 @@
 
 <pre>
 
+1. Eaadm add pivilage to eap_globals for BPC
+
+-- table:
+
+
 -- BPCV_STATUTORY_2021
+CREATE TABLE BPC_STATUTORY_2021
+(
+  TIME        VARCHAR2(7 BYTE),
+  GL_ACCOUNT  VARCHAR2(100 BYTE),
+  COMPANY     NUMBER,
+  PARTNER     NUMBER,
+  CT          NUMBER,
+  DT          NUMBER
+)
+TABLESPACE USERS
+PCTUSED    0
+PCTFREE    10
+INITRANS   1
+MAXTRANS   255
+STORAGE    (
+            PCTINCREASE      0
+            BUFFER_POOL      DEFAULT
+           )
+LOGGING 
+NOCOMPRESS 
+NOCACHE
+NOPARALLEL
+MONITORING;
 
 
 begin
