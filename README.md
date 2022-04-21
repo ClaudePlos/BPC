@@ -7,6 +7,17 @@
 <pre>
 
 1. Eaadm add pivilage to eap_globals for BPC
+2. add privilage to eat_firmy 
+
+create view  kgv_konta as select * from kg_konta
+
+create view  eav_firmy as select * from eat_firmy
+
+create view  ckkv_klienci as select * from ckk_klienci
+
+create view  kgv_ksiegowania as select * from kgt_ksiegowania
+
+create view  kgv_dokumenty as select * from kgt_dokumenty
 
 -- table:
 
