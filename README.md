@@ -22,8 +22,8 @@ create view  kgv_dokumenty as select * from kgt_dokumenty
 -- table:
 
 
--- BPCV_STATUTORY_2021
-CREATE TABLE BPC_STATUTORY_2021
+-- BPCV_STATUTORY
+CREATE TABLE BPC_STATUTORY
 (
   TIME        VARCHAR2(7 BYTE),
   GL_ACCOUNT  VARCHAR2(100 BYTE),
@@ -53,11 +53,11 @@ begin
 eap_globals.USTAW_konsolidacje('T');
 end;
 
-delete BPC_STATUTORY_2022Q1
+delete BPC_STATUTORY
 
 commit
 
-insert into BPC_STATUTORY_2022Q1 (time, gl_account, company, partner, ct, dt)
+insert into BPC_STATUTORY (time, gl_account, company, partner, ct, dt)
 select time, gl_account, company, partner, sum(CT) CT, sum(DT) DT  from ( 
 select to_char(ks_dok_data_zaksiegowania,'YYYY-MM')  time 
 , knt_pelny_numer GL_ACCOUNT
@@ -99,7 +99,7 @@ delete BPC_STATUTORY_2021
 
 commit
 
-insert into BPC_STATUTORY_2021 (time, gl_account, company, partner, ct, dt)
+insert into BPC_STATUTORY (time, gl_account, company, partner, ct, dt)
 select time, gl_account, company, partner, sum(CT) CT, sum(DT) DT  from ( 
 select to_char(ks_dok_data_zaksiegowania,'YYYY-MM')  time 
 , knt_pelny_numer GL_ACCOUNT
