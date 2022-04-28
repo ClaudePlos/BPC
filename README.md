@@ -48,7 +48,7 @@ NOPARALLEL
 MONITORING;
 
 
--- new version:
+-- new version from 2022-04:
 
 delete BPC_STATUTORY
 
@@ -65,7 +65,7 @@ select to_char(ks_dok_data_zaksiegowania,'YYYY-MM')  time
 , 'Ct'type
 from kgt_ksiegowania, kg_konta, eat_firmy, kgt_dokumenty
 where ks_knt_ma = knt_id and ks_frm_id = frm_id 
-and ks_f_symulacja = 'T' 
+and (ks_f_symulacja = 'T' or ks_f_zaksiegowany = 'T') 
 and ks_dok_id =dok_id
 and dok_rdok_kod != 'BO'
 and knt_typ = 'B'
@@ -81,13 +81,14 @@ select to_char(ks_dok_data_zaksiegowania,'YYYY-MM')  time
 , 'Dt'type
 from kgt_ksiegowania, kg_konta, eat_firmy, kgt_dokumenty
 where ks_knt_wn = knt_id and ks_frm_id = frm_id 
-and ks_f_symulacja = 'T' 
+and (ks_f_symulacja = 'T' or ks_f_zaksiegowany = 'T') 
 and ks_dok_id= dok_id
 and dok_rdok_kod != 'BO'
 and knt_typ = 'B'
 and to_char(ks_dok_data_zaksiegowania,'YYYY-MM') in  ('2022-01','2022-02','2022-03') 
 and frm_id in (300000,300170,300201,300203,300202,300305,300313,300317,300319,300304,300322,300315,300303,300314)
 ) group by time, gl_account, company, partner
+
 
 
 commit
