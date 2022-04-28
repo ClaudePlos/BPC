@@ -134,6 +134,10 @@ and frm_id in (300000,300170,300201,300203,300202,300305,300313,300317,300319,30
 commit
 
 
+select * from bpcv_statutory 
+where time = '2022-03' and company = 300319 
+and gl_account like '%301-1-01-011100%'
+
 
 -- Account:
 begin
