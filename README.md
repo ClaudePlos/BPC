@@ -1,4 +1,4 @@
-VPN: Cisco kilent: KSkowronski rekeep2022
+VPN: Cisco kilent: KSkowronski rekeep2022 d: vpn.rekeep.com
 
 
 Question to next meating:
