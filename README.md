@@ -1,3 +1,6 @@
+VPN: Cisco kilent: KSkowronski rekeep2022
+
+
 Question to next meating:
 1. how the data is stored, cumulative after refresh or only update (clear store and one moret time load)?
 
