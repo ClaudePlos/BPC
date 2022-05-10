@@ -1,4 +1,5 @@
 VPN: Cisco kilent: KSkowronski rekeep2022 d: vpn.rekeep.com
+BPC: KSKOWRON / rekeep2022
 
 
 Question to next meating:
