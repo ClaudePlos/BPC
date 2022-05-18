@@ -58,11 +58,13 @@ MONITORING;
 
 -- new version from 2022-04:
 
-delete BPC_STATUTORY
+
+-- 01
+delete BPC0_STATUTORY
 
 commit
 
-insert into BPC_STATUTORY (time, gl_account, company, partner, ct, dt)
+insert into BPC0_STATUTORY (time, gl_account, company, partner, ct, dt)
 select time, gl_account, company, partner, sum(CT) CT, sum(DT) DT  from ( 
 select to_char(ks_dok_data_zaksiegowania,'YYYY-MM')  time 
 , knt_pelny_numer GL_ACCOUNT
@@ -100,6 +102,25 @@ and frm_id in (300000,300170,300201,300203,300202,300305,300313,300317,300319,30
 
 
 commit
+
+
+ -- 02
+delete BPC_STATUTORY
+
+commit
+
+insert into BPC_STATUTORY (time, gl_account, company, partner, ct, dt)
+select * from BPC_STATUTORY where time in ('2022-01')
+union all
+select '2022-02', GL_ACCOUNT, COMPANY, PARTNER, sum(CT), sum(DT) from BPC_STATUTORY where time in ('2022-01','2022-02')
+group by GL_ACCOUNT, COMPANY, PARTNER
+union all
+select '2022-03', GL_ACCOUNT, COMPANY, PARTNER, sum(CT), sum(DT) from BPC_STATUTORY where time in ('2022-01','2022-02','2022-03')
+group by GL_ACCOUNT, COMPANY, PARTNER
+union all
+select '2022-04', GL_ACCOUNT, COMPANY, PARTNER, sum(CT), sum(DT) from BPC_STATUTORY where time in ('2022-01','2022-02','2022-03','2022-04')
+group by GL_ACCOUNT, COMPANY, PARTNER
+
 
 -- view Btcv_statutory
 
