@@ -122,6 +122,12 @@ select '2022-04', GL_ACCOUNT, COMPANY, PARTNER, sum(CT), sum(DT) from BPC_STATUT
 group by GL_ACCOUNT, COMPANY, PARTNER
 
 
+-- check
+select sum(ct), sum(dt), sum(ct)-sum(dt) from BPC_STATUTORY where company = 300319 and time = '2022-03' and (gl_account like '70%' or gl_account like '720%' or gl_account like '721%')
+
+
+
+
 -- view Btcv_statutory
 
 
