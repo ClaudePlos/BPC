@@ -1,3 +1,9 @@
+TODO:
+1. Federica - Account Validation
+2. widok Waldka 
+
+
+
 VPN: Cisco kilent: KSkowronski rekeep2022 d: vpn.rekeep.com
 BPC: KSKOWRON / rekeep2022
 
