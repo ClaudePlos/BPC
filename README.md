@@ -1,6 +1,7 @@
 TODO:
 1. Federica - Account Validation
 2. widok Waldka 
+3. Hotel w Gliwicach 
 
 
 
