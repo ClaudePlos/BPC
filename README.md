@@ -67,12 +67,21 @@ MONITORING;
 
 
 -- 01
-delete BPC0_STATUTORY
+delete BPC_STATUTORY
 
 commit
 
-insert into BPC0_STATUTORY (time, gl_account, company, partner, ct, dt)
-select time, gl_account, company, partner, sum(CT) CT, sum(DT) DT  from ( 
+begin
+eap_globals.USTAW_konsolidacje('T');
+end;
+
+insert into BPC_STATUTORY (time, gl_account, company, partner, ct, dt)
+select time, gl_account, company, partner
+, sum(CT) over (partition by company, partner, gl_account, year order by time) CT  
+, sum(DT) over (partition by company, partner, gl_account, year order by time) DT   
+from (
+select time, gl_account, company, partner, sum(CT) CT, sum(DT) DT, substr(time,0,4) year  
+from ( 
 select to_char(ks_dok_data_zaksiegowania,'YYYY-MM')  time 
 , knt_pelny_numer GL_ACCOUNT
 , frm_id COMPANY
@@ -86,7 +95,8 @@ and (ks_f_symulacja = 'T' or ks_f_zaksiegowany = 'T')
 and ks_dok_id =dok_id
 and dok_rdok_kod != 'BO'
 and knt_typ = 'B'
-and to_char(ks_dok_data_zaksiegowania,'YYYY-MM') in  ('2022-01','2022-02','2022-03') 
+and knt_pelny_numer like '234-826572%01'
+and to_char(ks_dok_data_zaksiegowania,'YYYY-MM') in  ('2022-01','2022-02','2022-03','2022-04') 
 and frm_id in (300000,300170,300201,300203,300202,300305,300313,300317,300319,300304,300322,300315,300303,300314)
 union all 
 select to_char(ks_dok_data_zaksiegowania,'YYYY-MM')  time 
@@ -102,31 +112,11 @@ and (ks_f_symulacja = 'T' or ks_f_zaksiegowany = 'T')
 and ks_dok_id= dok_id
 and dok_rdok_kod != 'BO'
 and knt_typ = 'B'
-and to_char(ks_dok_data_zaksiegowania,'YYYY-MM') in  ('2022-01','2022-02','2022-03') 
+and knt_pelny_numer like '234-826572%01'
+and to_char(ks_dok_data_zaksiegowania,'YYYY-MM') in  ('2022-01','2022-02','2022-03','2022-04') 
 and frm_id in (300000,300170,300201,300203,300202,300305,300313,300317,300319,300304,300322,300315,300303,300314)
 ) group by time, gl_account, company, partner
-
-
-
-commit
-
-
- -- 02
-delete BPC_STATUTORY
-
-commit
-
-insert into BPC_STATUTORY (time, gl_account, company, partner, ct, dt)
-select * from BPC_STATUTORY where time in ('2022-01')
-union all
-select '2022-02', GL_ACCOUNT, COMPANY, PARTNER, sum(CT), sum(DT) from BPC_STATUTORY where time in ('2022-01','2022-02')
-group by GL_ACCOUNT, COMPANY, PARTNER
-union all
-select '2022-03', GL_ACCOUNT, COMPANY, PARTNER, sum(CT), sum(DT) from BPC_STATUTORY where time in ('2022-01','2022-02','2022-03')
-group by GL_ACCOUNT, COMPANY, PARTNER
-union all
-select '2022-04', GL_ACCOUNT, COMPANY, PARTNER, sum(CT), sum(DT) from BPC_STATUTORY where time in ('2022-01','2022-02','2022-03','2022-04')
-group by GL_ACCOUNT, COMPANY, PARTNER
+)
 
 
 -- check
