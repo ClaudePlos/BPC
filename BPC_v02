@@ -110,3 +110,24 @@ select '2022-04', GL_ACCOUNT, COMPANY, PARTNER
 from BPC0_STATUTORY where time in ('2022-01','2022-02','2022-03','2022-04')
 group by GL_ACCOUNT, COMPANY, PARTNER
 
+
+
+CREATE TABLE BPC0_STATUTORY ( 
+  TIME        VARCHAR2 (7), 
+  GL_ACCOUNT  VARCHAR2 (100), 
+  COMPANY     NUMBER, 
+  PARTNER     NUMBER, 
+  CT          NUMBER, 
+  DT          NUMBER, 
+  SALDO       VARCHAR2 (10) ) ; 
+  
+  
+  
+ CREATE TABLE BPC_STATUTORY ( 
+  TIME        VARCHAR2 (7), 
+  GL_ACCOUNT  VARCHAR2 (100), 
+  COMPANY     NUMBER, 
+  PARTNER     NUMBER, 
+  CT          NUMBER, 
+  DT          NUMBER ) ; 
+
