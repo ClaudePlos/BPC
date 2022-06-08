@@ -4,6 +4,9 @@ delete BPC_STATUTORY
 
 commit
 
+
+commit
+
 begin
 eap_globals.USTAW_konsolidacje('T');
 end;
@@ -54,12 +57,14 @@ and to_char(ks_dok_data_zaksiegowania,'YYYY-MM') in  ('2022-01','2022-02','2022-
 and frm_id in (300000,300170,300201,300203,300202,300305,300313,300317,300319,300304,300322,300315,300303,300314)
 ) group by time, gl_account, company, partner, knt_typ_salda
 
+
+-- 02
 update BPC0_STATUTORY set partner = null
 
 commit
 
 
- -- 02
+ -- 03
 delete BPC_STATUTORY
 
 commit
@@ -90,6 +95,8 @@ select '2022-04', GL_ACCOUNT, COMPANY, PARTNER
 , case when saldo not in ('WN') and sum(nvl(DT,0))-sum(nvl(CT,0)) > 0 then sum(nvl(DT,0))-sum(nvl(CT,0)) when saldo in ('WN') then sum(nvl(DT,0))-sum(nvl(CT,0)) else 0 end DT
 from BPC0_STATUTORY where time in ('2022-01','2022-02','2022-03','2022-04')
 group by GL_ACCOUNT, COMPANY, PARTNER, saldo
+
+
 
 
 
