@@ -1,4 +1,100 @@
 
+-- 01
+delete BPC_STATUTORY
+
+commit
+
+begin
+eap_globals.USTAW_konsolidacje('T');
+end;
+
+
+
+-- 01
+delete BPC0_STATUTORY
+
+commit
+
+insert into BPC0_STATUTORY (time, gl_account, company, partner, ct, dt, saldo)
+select time, gl_account, company, partner, sum(CT) CT, sum(DT) DT, knt_typ_salda  from ( 
+select to_char(ks_dok_data_zaksiegowania,'YYYY-MM')  time 
+, knt_pelny_numer GL_ACCOUNT
+, frm_id COMPANY
+, (select frm_id from eat_firmy where dok_kl_kod_pod = frm_kl_id) Partner
+, ks_kwota CT
+, null DT
+, 'Ct'type
+, knt_typ_salda
+from kgt_ksiegowania, kg_konta, eat_firmy, kgt_dokumenty
+where ks_knt_ma = knt_id and ks_frm_id = frm_id 
+and (ks_f_symulacja = 'T' or ks_f_zaksiegowany = 'T') 
+and ks_dok_id =dok_id
+--and dok_rdok_kod != 'BO'
+and knt_typ = 'B'
+--and knt_pelny_numer like '012-02-07'
+and to_char(ks_dok_data_zaksiegowania,'YYYY-MM') in  ('2022-01','2022-02','2022-03') 
+and frm_id in (300000,300170,300201,300203,300202,300305,300313,300317,300319,300304,300322,300315,300303,300314)
+union all 
+select to_char(ks_dok_data_zaksiegowania,'YYYY-MM')  time 
+, knt_pelny_numer GL_ACCOUNT
+, frm_id COMPANY
+, (select frm_id from eat_firmy where dok_kl_kod_pod = frm_kl_id) Partner
+, null
+, ks_kwota
+, 'Dt'type
+, knt_typ_salda
+from kgt_ksiegowania, kg_konta, eat_firmy, kgt_dokumenty
+where ks_knt_wn = knt_id and ks_frm_id = frm_id 
+and (ks_f_symulacja = 'T' or ks_f_zaksiegowany = 'T') 
+and ks_dok_id= dok_id
+--and dok_rdok_kod != 'BO'
+and knt_typ = 'B'
+--and knt_pelny_numer like '012-02-07'
+and to_char(ks_dok_data_zaksiegowania,'YYYY-MM') in  ('2022-01','2022-02','2022-03') 
+and frm_id in (300000,300170,300201,300203,300202,300305,300313,300317,300319,300304,300322,300315,300303,300314)
+) group by time, gl_account, company, partner, knt_typ_salda
+
+update BPC0_STATUTORY set partner = null
+
+commit
+
+
+ -- 02
+delete BPC_STATUTORY
+
+commit
+
+insert into BPC_STATUTORY (time, gl_account, company, partner, ct, dt)
+select '2022-01', GL_ACCOUNT, COMPANY, PARTNER
+, case when saldo not in ('WN') and sum(nvl(CT,0))-sum(nvl(DT,0)) < 0 then 0 when saldo in ('WN') then 0 else sum(nvl(CT,0))-sum(nvl(DT,0)) end CT
+, case when saldo not in ('WN') and sum(nvl(DT,0))-sum(nvl(CT,0)) > 0 then sum(nvl(DT,0))-sum(nvl(CT,0)) when saldo in ('WN') then sum(nvl(DT,0))-sum(nvl(CT,0)) else 0 end DT
+ from BPC0_STATUTORY where time in ('2022-01')
+group by GL_ACCOUNT, COMPANY, PARTNER, saldo 
+union all
+select '2022-02', GL_ACCOUNT, COMPANY, PARTNER
+, case when saldo not in ('WN') and sum(nvl(CT,0))-sum(nvl(DT,0)) < 0 then 0 when saldo in ('WN') then 0 else sum(nvl(CT,0))-sum(nvl(DT,0)) end CT
+, case when saldo not in ('WN') and sum(nvl(DT,0))-sum(nvl(CT,0)) > 0 then sum(nvl(DT,0))-sum(nvl(CT,0)) when saldo in ('WN') then sum(nvl(DT,0))-sum(nvl(CT,0)) else 0 end DT
+from BPC0_STATUTORY where time in ('2022-01','2022-02')
+group by GL_ACCOUNT, COMPANY, PARTNER, saldo
+union all
+select '2022-03', GL_ACCOUNT, COMPANY, PARTNER
+, case when saldo not in ('WN') and sum(nvl(CT,0))-sum(nvl(DT,0)) < 0 then 0 when saldo in ('WN') then 0 else sum(nvl(CT,0))-sum(nvl(DT,0)) end CT
+, case when saldo not in ('WN') and sum(nvl(DT,0))-sum(nvl(CT,0)) > 0 then sum(nvl(DT,0))-sum(nvl(CT,0)) when saldo in ('WN') then sum(nvl(DT,0))-sum(nvl(CT,0)) else 0 end DT
+from BPC0_STATUTORY where time in ('2022-01','2022-02','2022-03')
+--and gl_account = '640-2019-02-C720-02'
+--and GL_ACCOUNT = '844-03-REZU' or gl_account = '640-2019-02-C720-02' or gl_account like '012-02-07' or gl_account = '148-C135'
+group by GL_ACCOUNT, COMPANY, PARTNER, saldo
+union all
+select '2022-04', GL_ACCOUNT, COMPANY, PARTNER
+, case when saldo not in ('WN') and sum(nvl(CT,0))-sum(nvl(DT,0)) < 0 then 0 when saldo in ('WN') then 0 else sum(nvl(CT,0))-sum(nvl(DT,0)) end CT
+, case when saldo not in ('WN') and sum(nvl(DT,0))-sum(nvl(CT,0)) > 0 then sum(nvl(DT,0))-sum(nvl(CT,0)) when saldo in ('WN') then sum(nvl(DT,0))-sum(nvl(CT,0)) else 0 end DT
+from BPC0_STATUTORY where time in ('2022-01','2022-02','2022-03','2022-04')
+group by GL_ACCOUNT, COMPANY, PARTNER, saldo
+
+
+
+
+--********************************************************************************************************************************************************************
 
 select * --sum(ct), sum(dt), sum(ct)-sum(dt) 
  from BPC_STATUTORY 
