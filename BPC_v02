@@ -96,6 +96,13 @@ group by GL_ACCOUNT, COMPANY, PARTNER, saldo
 
 --********************************************************************************************************************************************************************
 
+select time, gl_account, company, sum(ct) CT, sum(dt) DT
+ from BPC_STATUTORY 
+where company = 300319 and time in ('2022-03') 
+group by time, gl_account, company
+order by 2
+
+
 select * --sum(ct), sum(dt), sum(ct)-sum(dt) 
  from BPC_STATUTORY 
 where company = 300319 and time in ('2022-03') and (gl_account like '012-02-07')
