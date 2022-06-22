@@ -132,6 +132,7 @@ select '2022-03', GL_ACCOUNT, COMPANY
    -- 
     when gl_account like '761-%-%-1%' and to_number(substr(gl_account,13,6)) in (select frm_kl_id from eat_firmy where frm_kl_id in (select ck_kl_kod from CKK_CECHY_KLIENTOW where ck_ce_id = 100603)) then (select frm_id from eat_firmy where frm_kl_id = to_number(substr(gl_account,13,6)))
     when gl_account like '750-01-1-5%' and to_number(substr(gl_account,13,6)) in (select frm_kl_id from eat_firmy where frm_kl_id in (select ck_kl_kod from CKK_CECHY_KLIENTOW where ck_ce_id = 100603)) then (select frm_id from eat_firmy where frm_kl_id = to_number(substr(gl_account,13,6)))
+    when gl_account like '820-9999%' then 300305
   else null end PARTNER 
 , case when saldo not in ('WN') and sum(nvl(CT,0))-sum(nvl(DT,0)) < 0 then 0 when saldo in ('WN') then 0 else sum(nvl(CT,0))-sum(nvl(DT,0)) end CT
 , case when saldo not in ('WN') and sum(nvl(DT,0))-sum(nvl(CT,0)) > 0 then sum(nvl(DT,0))-sum(nvl(CT,0)) when saldo in ('WN') then sum(nvl(DT,0))-sum(nvl(CT,0)) else 0 end DT
@@ -146,13 +147,17 @@ select '2022-04', GL_ACCOUNT, COMPANY, PARTNER
 from BPC0_STATUTORY where time in ('2022-01','2022-02','2022-03','2022-04')
 group by GL_ACCOUNT, COMPANY, PARTNER, saldo
 
+commit
 
 
-200-1
-201-1
-241-01-1-%
 
 
+
+--******************************************************************
+-- OTHERS
+
+
+select * from BPC_STATUTORY where gl_account like '820-99%'
 
 
 select '2022-03', GL_ACCOUNT, COMPANY
@@ -177,58 +182,6 @@ from BPC0_STATUTORY where time in ('2022-01','2022-02','2022-03')
 --and GL_ACCOUNT = '844-03-REZU' or gl_account = '640-2019-02-C720-02' or gl_account like '012-02-07' or gl_account = '148-C135'
 group by GL_ACCOUNT, COMPANY, PARTNER, saldo
 order by partner, gl_account 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
