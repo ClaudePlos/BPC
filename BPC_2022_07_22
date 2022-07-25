@@ -364,3 +364,40 @@ select sum(CT), sum(DT) from BPC_STATUTORY2 where time = '2022-03'
 
 select * from BPC_STATUTORY2 where time = '2022-06' and partner is not null order by 2, 5, 6
 
+
+
+
+-- sprawdzenie czy znajduje partenrów 
+select '200-1%', bpc_ref_data.CHECK_PARTNER_ACC_IS_CORECT('200-1%','2022-03') czy_jest from dual
+union all
+select '201-1%', bpc_ref_data.CHECK_PARTNER_ACC_IS_CORECT('201-1%','2022-03') czy_jest from dual
+union all
+select '200-3%', bpc_ref_data.CHECK_PARTNER_ACC_IS_CORECT('200-3%','2022-03') czy_jest from dual
+union all
+select '201-3%', bpc_ref_data.CHECK_PARTNER_ACC_IS_CORECT('201-3%','2022-03') czy_jest from dual
+union all
+select '241-01-1-%', bpc_ref_data.CHECK_PARTNER_ACC_IS_CORECT('241-01-1-%','2022-03') czy_jest from dual
+union all
+select '241-02-1-%', bpc_ref_data.CHECK_PARTNER_ACC_IS_CORECT('241-02-1-%','2022-03') czy_jest from dual
+union all
+select '241-01-1-%', bpc_ref_data.CHECK_PARTNER_ACC_IS_CORECT('241-01-1-%','2022-03') czy_jest from dual
+union all
+select '241-02-1-%', bpc_ref_data.CHECK_PARTNER_ACC_IS_CORECT('241-02-1-%','2022-03') czy_jest from dual
+union all
+select '249-1-%-%', bpc_ref_data.CHECK_PARTNER_ACC_IS_CORECT('249-1-%-%','2022-03') czy_jest from dual
+union all
+select '301-1-%', bpc_ref_data.CHECK_PARTNER_ACC_IS_CORECT('301-1-%','2022-03') czy_jest from dual
+union all
+select '302-1-%', bpc_ref_data.CHECK_PARTNER_ACC_IS_CORECT('302-1-%','2022-03') czy_jest from dual
+union all
+select '709-%', bpc_ref_data.CHECK_PARTNER_ACC_IS_CORECT('709-%','2022-03') czy_jest from dual
+union all
+select '739-%', bpc_ref_data.CHECK_PARTNER_ACC_IS_CORECT('739-%','2022-03') czy_jest from dual
+union all
+select '721-%', bpc_ref_data.CHECK_PARTNER_ACC_IS_CORECT('721-%','2022-03') czy_jest from dual
+union all
+select '76%-%-1-%-%', bpc_ref_data.CHECK_PARTNER_ACC_IS_CORECT('76%-%-1-%-%','2022-03') czy_jest from dual
+union all
+select '75%-%-1-%-%', bpc_ref_data.CHECK_PARTNER_ACC_IS_CORECT('75%-%-1-%-%','2022-03') czy_jest from dual
+union all
+select '820-9999%', bpc_ref_data.CHECK_PARTNER_ACC_IS_CORECT('820-9999%','2022-03') czy_jest from dual
