@@ -367,6 +367,7 @@ select * from BPC_STATUTORY2 where time = '2022-06' and partner is not null orde
 
 
 
+select * from (
 -- sprawdzenie czy znajduje partenrów 
 select '200-1%', bpc_ref_data.CHECK_PARTNER_ACC_IS_CORECT('200-1%','2022-03') czy_jest from dual
 union all
@@ -401,3 +402,12 @@ union all
 select '75%-%-1-%-%', bpc_ref_data.CHECK_PARTNER_ACC_IS_CORECT('75%-%-1-%-%','2022-03') czy_jest from dual
 union all
 select '820-9999%', bpc_ref_data.CHECK_PARTNER_ACC_IS_CORECT('820-9999%','2022-03') czy_jest from dual
+) order by 2
+
+
+
+
+select time, gl_account, company, partner, ct, dt --, sum(ct) CT, sum(dt) DT
+ from BPC_STATUTORY 
+where time in ('2022-03') 
+and gl_account like '241-02-%'
