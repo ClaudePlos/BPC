@@ -1,0 +1,366 @@
+
+select sum(CT), sum(DT) from BPC_STATUTORY2 where time = '2022-03'
+642417622,69
+
+
+
+
+
+
+
+
+eat_firmy
+
+select time, gl_account, company, partner, sum(ct) CT, sum(dt) DT
+ from BPC_STATUTORY 
+where company = 300319 and time in ('2022-03') 
+group by time, gl_account, company, partner
+order by 2
+
+select * from BPC_STATUTORY where partner in (300323,300324)
+
+select * --sum(ct), sum(dt), sum(ct)-sum(dt) 
+ from BPC_STATUTORY 
+where time in ('2022-03') and (gl_account like '249-1-%-%%')
+order by 2
+
+
+select * --sum(ct), sum(dt), sum(ct)-sum(dt) 
+ from BPC_STATUTORY 
+where company = 300319 and time in ('2022-03') and (gl_account like '640-2019-02-C720-02')
+
+select * --sum(ct), sum(dt), sum(ct)-sum(dt) 
+ from BPC_STATUTORY 
+where company = 300319 and time in ('2022-03') and (gl_account like '742-02-ADZS')
+
+
+
+select * --sum(ct), sum(dt), sum(ct)-sum(dt) 
+ from BPC_STATUTORY 
+where company = 300319 and time in ('2022-03') and (gl_account like '844-03-REZU')  or GL_ACCOUNT = '742-02-ADZS'
+--and GL_ACCOUNT = '742-02-ADZS'
+
+
+-- 01
+delete BPC_STATUTORY
+
+commit
+
+begin
+eap_globals.USTAW_konsolidacje('T');
+end;
+
+
+CREATE TABLE BPC0_STATUTORY ( 
+  TIME        VARCHAR2 (7), 
+  GL_ACCOUNT  VARCHAR2 (100), 
+  COMPANY     NUMBER, 
+  PARTNER     NUMBER, 
+  CT          NUMBER, 
+  DT          NUMBER, 
+  SALDO       VARCHAR2 (10) ) ; 
+
+
+CREATE TABLE BPC_STATUTORY
+(
+  TIME        VARCHAR2(7 BYTE),
+  GL_ACCOUNT  VARCHAR2(100 BYTE),
+  COMPANY     NUMBER,
+  PARTNER     NUMBER,
+  CT          NUMBER,
+  DT          NUMBER
+)
+
+
+-- 01
+-- trunc(ks_dok_data_zaksiegowania,'MONTH')
+delete BPC0_STATUTORY
+
+commit
+
+insert into BPC0_STATUTORY (time, gl_account, company, partner, ct, dt, saldo)
+
+
+select time, gl_account, company, partner, sum(CT) CT, sum(DT) DT, knt_typ_salda  from ( 
+select to_char(ks_dok_data_zaksiegowania,'YYYY-MM')  time 
+, knt_pelny_numer GL_ACCOUNT
+, frm_id COMPANY
+, null Partner
+, ks_kwota CT
+, null DT
+, 'Ct'type
+, knt_typ_salda
+from kgt_ksiegowania, kg_konta, eat_firmy, kgt_dokumenty
+where ks_knt_ma = knt_id and ks_frm_id = frm_id 
+and (ks_f_symulacja = 'T' or ks_f_zaksiegowany = 'T') 
+and ks_dok_id =dok_id
+--and dok_rdok_kod != 'BO'
+and knt_typ = 'B'
+--and knt_pelny_numer like '012-02-07'
+and to_char(ks_dok_data_zaksiegowania,'YYYY-MM') in  ('2022-01','2022-02','2022-03','2022-04') 
+and frm_id in (300000,300170,300201,300203,300202,300305,300313,300317,300319,300304,300322,300315,300303,300314)
+union all 
+select to_char(ks_dok_data_zaksiegowania,'YYYY-MM')  time 
+, knt_pelny_numer GL_ACCOUNT
+, frm_id COMPANY
+, null Partner
+, null
+, ks_kwota
+, 'Dt'type
+, knt_typ_salda
+from kgt_ksiegowania, kg_konta, eat_firmy, kgt_dokumenty
+where ks_knt_wn = knt_id and ks_frm_id = frm_id 
+and (ks_f_symulacja = 'T' or ks_f_zaksiegowany = 'T') 
+and ks_dok_id= dok_id
+--and dok_rdok_kod != 'BO'
+and knt_typ = 'B'
+--and knt_pelny_numer like '012-02-07'
+and to_char(ks_dok_data_zaksiegowania,'YYYY-MM') in  ('2022-01','2022-02','2022-03','2022-04') 
+and frm_id in (300000,300170,300201,300203,300202,300305,300313,300317,300319,300304,300322,300315,300303,300314)
+) group by time, gl_account, company, partner, knt_typ_salda
+
+
+-- 02
+update BPC0_STATUTORY set partner = null
+
+commit
+
+ -- 163680
+ -- 165844
+ -- 03
+delete BPC_STATUTORY
+
+select count(1) from BPC_STATUTORY
+
+commit
+
+declare
+ v_saldo_wn NUMBER;
+ v_saldo_ma NUMBER;
+begin
+for rek in (
+select time, gl_account, company, partner, saldo, sum(ct) CT, sum(dt) DT from (
+select '2022-01' time, GL_ACCOUNT, COMPANY, PARTNER, saldo
+, CT
+, DT
+ from BPC0_STATUTORY where time in ('2022-01')
+) group by time, GL_ACCOUNT, COMPANY, PARTNER, saldo
+union all
+select time, gl_account, company, partner, saldo, sum(ct) CT, sum(dt) DT from (
+select '2022-02' time, GL_ACCOUNT, COMPANY, PARTNER, saldo
+, CT
+, DT
+from BPC0_STATUTORY where time in ('2022-01','2022-02')
+) group by time, GL_ACCOUNT, COMPANY, PARTNER, saldo
+union all
+select time, gl_account, company, partner, saldo, sum(ct) CT, sum(dt) DT from (
+select '2022-03' time, GL_ACCOUNT, COMPANY, saldo
+, case 
+    when gl_account like '200-1%' and to_number(substr(gl_account,7,6)) in (select frm_kl_id from eat_firmy where frm_kl_id in (select ck_kl_kod from CKK_CECHY_KLIENTOW where ck_ce_id = 100603) and frm_id not in (300323,300324)) then (select frm_id from eat_firmy where frm_kl_id = to_number(substr(gl_account,7,6))) 
+    when gl_account like '201-1%' and to_number(substr(gl_account,7,6)) in (select frm_kl_id from eat_firmy where frm_kl_id in (select ck_kl_kod from CKK_CECHY_KLIENTOW where ck_ce_id = 100603) and frm_id not in (300323,300324)) then (select frm_id from eat_firmy where frm_kl_id = to_number(substr(gl_account,7,6))) 
+    when gl_account like '200-3%' and to_number(substr(gl_account,7,6)) in (select frm_kl_id from eat_firmy where frm_kl_id in (select ck_kl_kod from CKK_CECHY_KLIENTOW where ck_ce_id = 100603) and frm_id not in (300323,300324)) then (select frm_id from eat_firmy where frm_kl_id = to_number(substr(gl_account,7,6)))
+	when gl_account like '201-3%' and to_number(substr(gl_account,7,6)) in (select frm_kl_id from eat_firmy where frm_kl_id in (select ck_kl_kod from CKK_CECHY_KLIENTOW where ck_ce_id = 100603) and frm_id not in (300323,300324)) then (select frm_id from eat_firmy where frm_kl_id = to_number(substr(gl_account,7,6)))
+	when gl_account like '241-01-1-%' and to_number(substr(gl_account,13,6)) in (select frm_kl_id from eat_firmy where frm_kl_id in (select ck_kl_kod from CKK_CECHY_KLIENTOW where ck_ce_id = 100603) and frm_id not in (300323,300324)) then (select frm_id from eat_firmy where frm_kl_id = to_number(substr(gl_account,13,6))) 
+    when gl_account like '241-02-1-%' and to_number(substr(gl_account,13,6)) in (select frm_kl_id from eat_firmy where frm_kl_id in (select ck_kl_kod from CKK_CECHY_KLIENTOW where ck_ce_id = 100603) and frm_id not in (300323,300324)) then (select frm_id from eat_firmy where frm_kl_id = to_number(substr(gl_account,13,6)))
+    when gl_account like '249-1-%-%' and to_number(substr(gl_account,10,6)) in (select frm_kl_id from eat_firmy where frm_kl_id in (select ck_kl_kod from CKK_CECHY_KLIENTOW where ck_ce_id = 100603) and frm_id not in (300323,300324)) then (select frm_id from eat_firmy where frm_kl_id = to_number(substr(gl_account,10,6)))
+    when gl_account like '301-1-%' and to_number(substr(gl_account,10,6)) in (select frm_kl_id from eat_firmy where frm_kl_id in (select ck_kl_kod from CKK_CECHY_KLIENTOW where ck_ce_id = 100603) and frm_id not in (300323,300324)) then (select frm_id from eat_firmy where frm_kl_id = to_number(substr(gl_account,10,6)))
+    when gl_account like '302-1-%' and to_number(substr(gl_account,10,6)) in (select frm_kl_id from eat_firmy where frm_kl_id in (select ck_kl_kod from CKK_CECHY_KLIENTOW where ck_ce_id = 100603) and frm_id not in (300323,300324)) then (select frm_id from eat_firmy where frm_kl_id = to_number(substr(gl_account,10,6)))
+    when gl_account like '709-%' and to_number(substr(gl_account,13,6)) in (select frm_kl_id from eat_firmy where frm_kl_id in (select ck_kl_kod from CKK_CECHY_KLIENTOW where ck_ce_id = 100603) and frm_id not in (300323,300324)) then (select frm_id from eat_firmy where frm_kl_id = to_number(substr(gl_account,13,6)))
+    when gl_account like '739-%' and to_number(substr(gl_account,13,6)) in (select frm_kl_id from eat_firmy where frm_kl_id in (select ck_kl_kod from CKK_CECHY_KLIENTOW where ck_ce_id = 100603) and frm_id not in (300323,300324)) then (select frm_id from eat_firmy where frm_kl_id = to_number(substr(gl_account,13,6)))
+    when gl_account like '721-%' and to_number(substr(gl_account,5,6)) in (select frm_kl_id from eat_firmy where frm_kl_id in (select ck_kl_kod from CKK_CECHY_KLIENTOW where ck_ce_id = 100603) and frm_id not in (300323,300324)) then (select frm_id from eat_firmy where frm_kl_id = to_number(substr(gl_account,5,6)))
+   -- 
+    when gl_account like '76%-%-1-%-%' and to_number(substr(gl_account,13,6)) in (select frm_kl_id from eat_firmy where frm_kl_id in (select ck_kl_kod from CKK_CECHY_KLIENTOW where ck_ce_id = 100603)) then (select frm_id from eat_firmy where frm_kl_id = to_number(substr(gl_account,13,6)))
+    when gl_account like '75%-%-1-%-%' and to_number(substr(gl_account,13,6)) in (select frm_kl_id from eat_firmy where frm_kl_id in (select ck_kl_kod from CKK_CECHY_KLIENTOW where ck_ce_id = 100603)) then (select frm_id from eat_firmy where frm_kl_id = to_number(substr(gl_account,13,6)))
+    when gl_account like '820-9999%' then 300170
+  else null end PARTNER 
+, CT
+, DT
+from BPC0_STATUTORY where time in ('2022-01','2022-02','2022-03')
+--and gl_account like '702-02-C644%'
+--and GL_ACCOUNT = '844-03-REZU' or gl_account = '640-2019-02-C720-02' or gl_account like '012-02-07' or gl_account = '148-C135'
+) group by time, GL_ACCOUNT, COMPANY, PARTNER, saldo
+union all
+select time, gl_account, company, partner, saldo, sum(ct) CT, sum(dt) DT from (
+select '2022-04' time, GL_ACCOUNT, COMPANY, PARTNER, saldo
+, CT
+, DT
+from BPC0_STATUTORY where time in ('2022-01','2022-02','2022-03','2022-04') 
+) group by time, GL_ACCOUNT, COMPANY, PARTNER, saldo
+)
+loop
+ bpc_tools.uwzglednijtypsalda (rek.saldo, NVL (rek.dt, 0), NVL (rek.ct, 0), v_saldo_wn, v_saldo_ma);
+ insert into BPC_STATUTORY (time, gl_account, company, partner, ct, dt) values (rek.time, rek.gl_account, rek.company, rek.partner, v_saldo_ma, v_saldo_wn);
+end loop;
+end;
+
+commit
+
+
+eat_firmy
+
+
+ company = 300319 
+and 
+
+
+
+
+select (select frm_nazwa from eat_firmy where frm_id = company) firma, 
+sum(ct), sum(dt) from (
+select time, gl_account, company, partner, ct, dt --, sum(ct) CT, sum(dt) DT
+ from BPC_STATUTORY 
+where time in ('2022-03') and company = 300313 
+and (gl_account like '844-01%' or gl_account like '844-02%')
+--group by time, gl_account, company, partner
+order by 2
+)
+group by company
+--order by 1
+
+
+--***********************
+-- check NFP
+
+select (select frm_nazwa from eat_firmy where frm_id = company) firma, 
+sum(ct), sum(dt) from (
+select time, gl_account, company, partner, ct, dt --, sum(ct) CT, sum(dt) DT
+ from BPC_STATUTORY 
+where time in ('2022-03') 
+and gl_account like '200-1%'
+)
+group by company
+order by 1
+
+
+
+
+ek_skladniki_czasowe
+
+
+
+
+
+
+
+
+
+
+
+select time, gl_account, company, partner, ct, dt --, sum(ct) CT, sum(dt) DT
+ from BPC_STATUTORY 
+where time in ('2022-03') 
+and gl_account like '709%'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+insert into BPC_STATUTORY (time, gl_account, company, partner, ct, dt)
+select time, gl_account, company, partner
+, case when CT-DT > 0 then CT-DT else 0 end CT 
+, case when DT-CT > 0 then DT-CT else 0 end DT 
+from (
+
+select time, gl_account, company, partner
+, sum(CT) over (partition by company, partner, gl_account, year order by time) CT  
+, sum(DT) over (partition by company, partner, gl_account, year order by time) DT   
+from (
+select time, gl_account, company, partner, sum(CT) CT,  sum(DT)  DT, substr(time,0,4) year  
+from ( 
+select to_char(ks_dok_data_zaksiegowania,'YYYY-MM')  time 
+, knt_pelny_numer GL_ACCOUNT
+, frm_id COMPANY
+, (select frm_id from eat_firmy where dok_kl_kod_pod = frm_kl_id) Partner
+, ks_kwota CT
+, null DT
+, 'Ct'type
+from kgt_ksiegowania, kg_konta, eat_firmy, kgt_dokumenty
+where ks_knt_ma = knt_id and ks_frm_id = frm_id 
+and (ks_f_symulacja = 'T') -- or ks_f_zaksiegowany = 'T'
+and ks_dok_id =dok_id
+--and dok_rdok_kod != 'BO'
+and knt_typ = 'B'
+and knt_pelny_numer like '023%'
+and to_char(ks_dok_data_zaksiegowania,'YYYY-MM') in  ('2022-01','2022-02','2022-03','2022-04') 
+and frm_id in (300000,300170,300201,300203,300202,300305,300313,300317,300319,300304,300322,300315,300303,300314)
+union all 
+select to_char(ks_dok_data_zaksiegowania,'YYYY-MM')  time 
+, knt_pelny_numer GL_ACCOUNT
+, frm_id COMPANY
+, (select frm_id from eat_firmy where dok_kl_kod_pod = frm_kl_id) Partner
+, null
+, ks_kwota
+, 'Dt'type
+from kgt_ksiegowania, kg_konta, eat_firmy, kgt_dokumenty
+where ks_knt_wn = knt_id and ks_frm_id = frm_id 
+and (ks_f_symulacja = 'T') -- or ks_f_zaksiegowany = 'T'
+and ks_dok_id= dok_id
+--and dok_rdok_kod != 'BO'
+and knt_typ = 'B'
+and knt_pelny_numer like '023%'
+and to_char(ks_dok_data_zaksiegowania,'YYYY-MM') in  ('2022-01','2022-02','2022-03','2022-04') 
+and frm_id in (300000,300170,300201,300203,300202,300305,300313,300317,300319,300304,300322,300315,300303,300314)
+) group by time, gl_account, company, partner
+)
+
+)
+
+
+
+
+
+
+declare
+ vRet1 varchar2(10);
+begin 
+ vRet1 := BPC_REF_DATA.REF01('2022');
+ dbms_output.PUT_LINE(vRet1);
+end;
+
+
+declare
+ vRet2 varchar2(10);
+begin 
+ vRet2 := BPC_REF_DATA.REF02('2022');
+ dbms_output.PUT_LINE(vRet2);
+end;
+
+
+commit
+
+
+166033
+
+165844
+
+select sum(CT), sum(DT) from BPC_STATUTORY2 where time = '2022-03'
+642417622,69
+642417622,69
+
+
+select * from BPC_STATUTORY2 where time = '2022-06' and partner is not null order by 2, 5, 6
+
