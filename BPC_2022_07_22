@@ -1,3 +1,36 @@
+New way refresh BPC:
+
+-- 01
+truncate table BPC0_STATUTORY
+
+-- 02
+truncate table BPC_STATUTORY
+
+-- 03
+declare
+v_ret varchar2(10);
+begin
+v_ret := bpc_ref_data.REF01(2022);
+dbms_output.put_line (v_ret);
+end;
+
+commit;
+
+-- 04
+declare
+v_ret varchar2(10);
+begin
+v_ret := bpc_ref_data.REF02(2022);
+dbms_output.put_line (v_ret);
+end;
+
+commit;
+
+
+
+
+
+
 
 select sum(CT), sum(DT) from BPC_STATUTORY2 where time = '2022-03'
 642417622,69
